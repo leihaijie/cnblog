@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+    <style>
+        .container {
+            margin-top: 150px;
+        }
+    </style>
+    <title>login</title>
+</head>
+<body>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <form action="">
+                <div class="form-group">
+                    <label for="user">用户名</label>
+                    <input type="text" class="form-control" id="user" placeholder="Username" name="username">
+                </div>
+                <div class="form-group">
+                    <label for="pwd">密码</label>
+                    <input type="password" class="form-control" id="pwd" placeholder="Password" name="password">
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <input type="text" id="valid_code" class="form-control">
+                    </div>
+                    <div class="col-md-6">
+                        <img id="valid_img" width="250" height="40" src="/get_valid_img/" alt="">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <input type="button" class="btn btn-default login_btn" value="提交"><span class="error" style="color: red;margin-left: 20px"></span>
+                </div>
+                <div class="form-group">
+                    <a href="/reg/" class="btn btn-default ">注册</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% csrf_token %}
+<script src="/static/jquery-3.2.1.min.js"></script>
+<script src="/static/bootstrap/js/bootstrap.min.js"></script>
+<script>
+    $(".login_btn").on("click",function () {
+        $.ajax({
+            url:"",
+            type:"post",
+            data:{
+                csrfmiddlewaretoken:$("[name='csrfmiddlewaretoken']").val(),
+                user:$("#user").val(),
+                pwd:$("#pwd").val(),
+                valid_code:$("#valid_code").val(),
+            },
+            success:function (data) {
+                console.log(data);
+                if (data.state){
+                    location.href="/index/"
+                }
+                else{
+                    $(".error").text(data.msg);
+                    $("#valid_img")[0].src+="?";
+                }
+            }
+        })
+    })
+    // 验证码刷新
+    $("#valid_img").click(function () {
+        $(this)[0].src+="?";
+    })
+</script>
+</body>
+</html>

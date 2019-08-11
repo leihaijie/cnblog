@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+    <script src="/static/jquery-3.2.1.min.js"></script>
+    <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+    <style>
+        .container {
+            margin-top: 150px;
+        }
+        #avatar{
+            display: none;
+        }
+        .avatar{
+            width: 60px;
+            height: 60px;
+            margin-left: 15px;
+        }
+    </style>
+    <title>modify_avatar</title>
+</head>
+<body>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <form action="">
+                <div class="form-group" style="display: none">
+                    <label for="id_user">用户名</label>
+                    <input type="text" name="user" class="form-control" id="id_user" disabled="disabled" value="{{ request.user.username }}"><span class="error pull-right"></span>
+                </div>
+                <div class="form-group">
+                    <label for="avatar">新头像<img src="/static/img/default.png/" class="avatar" alt=""></label>
+                    <input type="file" id="avatar" >
+                </div>
+                <div class="form-group">
+                    <label for="modify_avatar"></label>
+                    <input type="button" class="btn btn-default login_btn pull-right" id="modify_avatar" value="提交"></input>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% csrf_token %}
+<script>
+    //图片预览
+    $("#avatar").change(function () {
+        var choose_file=$(this)[0].files[0];
+        //创建一个文件读取的对象
+        var reader = new FileReader();
+        reader.readAsDataURL(choose_file);
+        reader.onload = function () {
+            //等上一步读完文件之后才 把图片加载到img标签中
+            $(".avatar").attr("src",reader.result)
+        }
+    });
+    //提交事件
+    $("#modify_avatar").click(function () {
+        var formData = new FormData();
+        formData.append("user", $("#id_user").val());
+        formData.append("avatar", $("#avatar")[0].files[0]);
+        formData.append("csrfmiddlewaretoken", $("[name='csrfmiddlewaretoken']").val());
+
+        $.ajax({
+            url: "modify_avatar",
+            type: "post",
+            processData: false,
+            contentType: false,
+            data: formData,
+            success: function (data) {
+                if (data.user){
+                    //修改成功
+                    location.href = "/index/"
+                }
+            }
+        })
+    });
+</script>
+</body>
+</html>

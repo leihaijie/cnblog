@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+    <script src="/static/jquery-3.2.1.min.js"></script>
+    <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+    <style>
+        .container {
+            margin-top: 150px;
+        }
+        #avatar{
+            display: none;
+        }
+        .avatar{
+            width: 60px;
+            height: 60px;
+            margin-left: 15px;
+        }
+    </style>
+    <title>reg</title>
+</head>
+<body>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <form action="">
+                {% for field in form %}
+                <div class="form-group">
+                    <label for>{{ field.label }}</label>
+                    {{ field }}<span class="error pull-right"></span>
+                </div>
+                {% endfor %}
+
+                <div class="form-group">
+                    <label for="avatar">头像<img src="/static/img/default.png/" class="avatar" alt=""></label>
+                    <input type="file" id="avatar" >
+                </div>
+                <div class="form-group">
+                        <input type="button" class="btn btn-default login_btn pull-right" id="reg-btn" value="提交"></input>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+{% csrf_token %}
+<script>
+    //图片预览
+    $("#avatar").change(function () {
+        // 文件对象
+        var choose_file=$(this)[0].files[0];
+        //创建一个文件读取的对象
+        var reader = new FileReader();
+        reader.readAsDataURL(choose_file);
+        reader.onload = function () {
+            //等上一步读完文件之后才 把图片加载到img标签中
+            $(".avatar").attr("src",reader.result)
+        }
+    });
+    //注册事件
+    $("#reg-btn").click(function () {
+        var formData = new FormData();
+        formData.append("user", $("#id_user").val());
+        formData.append("pwd", $("#id_pwd").val());
+        formData.append("repeat_pwd", $("#id_repeat_pwd").val());
+        formData.append("email", $("#id_email").val());
+        formData.append("avatar", $("#avatar")[0].files[0]);
+        formData.append("csrfmiddlewaretoken", $("[name='csrfmiddlewaretoken']").val());
+
+        $.ajax({
+            url: "",
+            type: "post",
+            processData: false,
+            contentType: false,
+            data: formData,
+            success: function (data) {
+                if (data.user){
+                    //注册成功
+                    location.href = "/login/"
+                }
+                else {
+                    //注册失败
+                    //加载错误信息
+                    $.each(data.error_dict,function (field,error_list) {
+                        $("#id_"+field).next().text(error_list[0]).css("color","red");
+                        $("#id_"+field).parent().addClass("has-error");
+                    })
+                }
+            }
+        })
+    });
+    // 将所有的input框绑定获取焦点的事件，将所有的错误信息清空
+    $("form input").focus(function () {
+        $(this).next().text("").parent().removeClass("has-error");
+    })
+</script>
+</body>
+</html>

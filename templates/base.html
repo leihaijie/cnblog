@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/article_detail.css">
+{#    <link rel="stylesheet" href="/static/css/mystyle.css">#}
+    <link rel="stylesheet" href="/static/theme/{{ blog.theme }}">
+    <script src="/static/jquery-3.2.1.min.js"></script>
+    <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+    <style>
+        .comment_item{
+            margin-left: 20px;
+        }
+    </style>
+    <title>base</title>
+    {% load my_tags %}
+</head>
+<body>
+
+<div class="header">
+    <p class="title">{{ blog.title }}</p>
+</div>
+<div class="container">
+    <div class="col-md-3">
+        {% get_menu username %}
+    </div>
+    <div class="col-md-8">
+       {% block content %}
+       
+       {% endblock content%}
+    </div>
+</div>
+
+
+</body>
+</html>
